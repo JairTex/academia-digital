@@ -5,12 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import me.dio.academia.digital.enums.GeneroEnum;
-import org.hibernate.validator.constraints.br.CPF;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,27 +15,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tb_alunos")
+@Table(name = "tb_instrutores")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Aluno {
-
+public class Instrutor {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
   @NotBlank(message= "Nome é obrigatório!")
   private String nome;
 
   @Column(unique = true)
-  @CPF(message = "CPF inválido!")
   private String cpf;
 
-  private String bairro;
-
-  private LocalDate dataDeNascimento;
-
-  private GeneroEnum genero;
-  @OneToMany(mappedBy = "aluno", cascade = CascadeType.REMOVE , fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "instrutor", cascade = CascadeType.PERSIST , fetch = FetchType.LAZY)
   @JsonIgnore
   private List<AvaliacaoFisica> avaliacoes = new ArrayList<>();
 }

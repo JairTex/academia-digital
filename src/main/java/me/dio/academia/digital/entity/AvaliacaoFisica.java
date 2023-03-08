@@ -3,7 +3,6 @@ package me.dio.academia.digital.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -18,11 +17,13 @@ public class AvaliacaoFisica {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @OneToOne
+  @JoinColumn(name = "avaliador_id")
+  private Instrutor avaliador;
+
   @ManyToOne
   @JoinColumn(name = "aluno_id")
   private Aluno aluno;
-
-  private LocalDateTime dataDaAvaliacao = LocalDateTime.now();
 
   @Column(name="peso_atual")
   private double peso;
@@ -30,4 +31,5 @@ public class AvaliacaoFisica {
   @Column(name="altura_atual")
   private double altura;
 
+  private LocalDateTime dataDaAvaliacao = LocalDateTime.now();
 }
