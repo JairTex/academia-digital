@@ -26,11 +26,9 @@ public class Aluno {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NotBlank(message= "Nome é obrigatório!")
   private String nome;
 
   @Column(unique = true)
-  @CPF(message = "CPF inválido!")
   private String cpf;
 
   private String bairro;

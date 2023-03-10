@@ -45,11 +45,24 @@ public interface IAlunoService {
   void delete(Long id);
 
   /**
+   * Retorna o imc calculado do Aluno de acordo com a última avaliação válida.
+   * @param id id do Aluno que terá seu IMC calculado.
+   * @return String "IMC"+"Classificação de IMC" de acordo com o calculo realizado.
+   */
+  String getImc(Long id);
+
+  /**
+   * Retorna a ultima Avaliacao Fisica do aluno indicado.
+   * @param id id do Aluno que terá sua ultima avaliacao fisica retornada.
+   * @return AvaliacaoFisica a ultima avaliacao do aluno.
+   */
+  AvaliacaoFisica getLastAvaliacaoFisica(Long id);
+
+  /**
    *
    * @param id id do aluno que será recuperada a lista de avaliações
    * @return uma lista com todas as avaliações do aluno de acordo com o Id
    */
   List<AvaliacaoFisica> getAllAvaliacaoFisicaId(Long id);
-
 
 }
