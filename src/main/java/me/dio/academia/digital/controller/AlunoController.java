@@ -3,6 +3,7 @@ package me.dio.academia.digital.controller;
 import me.dio.academia.digital.entity.Aluno;
 import me.dio.academia.digital.entity.AvaliacaoFisica;
 import me.dio.academia.digital.entity.form.AlunoForm;
+import me.dio.academia.digital.entity.form.AlunoUpdateForm;
 import me.dio.academia.digital.service.impl.AlunoServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/alunos")
 public class AlunoController {
-
-  @Autowired
   private AlunoServiceImpl service;
 
   @PostMapping
@@ -22,9 +21,9 @@ public class AlunoController {
     return service.create(form);
   }
 
-  @GetMapping("/avaliacoes/{id}")
-  public List<AvaliacaoFisica> getAllAvaliacaoFisicaId(@PathVariable Long id) {
-    return service.getAllAvaliacaoFisicaId(id);
+  @PutMapping("/{id}")
+  public Aluno create(@PathVariable Long id, @Valid @RequestBody AlunoUpdateForm form) {
+    return service.update(id, form);
   }
 
   @GetMapping
@@ -33,5 +32,18 @@ public class AlunoController {
     return service.getAll(dataDeNacimento);
   }
 
+  @GetMapping("/ultima-avaliacao/{id}")
+  public AvaliacaoFisica getUltimaAvaliacaoFisicaId(@PathVariable Long id) {
+    return service.getLastAvaliacaoFisica(id);
+  }
 
+  @GetMapping("/imc/{id}")
+  public String getImcId(@PathVariable Long id) {
+    return service.getImc(id);
+  }
+
+  @GetMapping("/avaliacoes/{id}")
+  public List<AvaliacaoFisica> getAllAvaliacaoFisicaId(@PathVariable Long id) {
+    return service.getAllAvaliacaoFisicaId(id);
+  }
 }
