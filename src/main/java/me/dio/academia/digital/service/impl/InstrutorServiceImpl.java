@@ -1,26 +1,19 @@
 package me.dio.academia.digital.service.impl;
 
-import me.dio.academia.digital.entity.Aluno;
 import me.dio.academia.digital.entity.AvaliacaoFisica;
 import me.dio.academia.digital.entity.Instrutor;
-import me.dio.academia.digital.entity.form.AlunoForm;
-import me.dio.academia.digital.entity.form.AlunoUpdateForm;
 import me.dio.academia.digital.entity.form.InstrutorForm;
 import me.dio.academia.digital.entity.form.InstrutorUpdateForm;
-import me.dio.academia.digital.exceptons.AvaliacaoFisicaNotFoundException;
-import me.dio.academia.digital.infra.utils.JavaTimeUtils;
+import me.dio.academia.digital.exceptions.InstrutorNotFoundException;
 import me.dio.academia.digital.repository.InstrutorRepository;
-import me.dio.academia.digital.service.IAlunoService;
 import me.dio.academia.digital.service.IInstrutorService;
 import org.springframework.stereotype.Service;
 
-import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class InstrutorServiceImpl implements IInstrutorService {
-  private InstrutorRepository repository;
+  final private InstrutorRepository repository;
 
   public InstrutorServiceImpl(InstrutorRepository repository) {
     this.repository = repository;
@@ -36,7 +29,9 @@ public class InstrutorServiceImpl implements IInstrutorService {
 
   @Override
   public Instrutor get(Long id) {
-    return repository.findById(id).get();
+    if(repository.findById(id).isPresent()) return repository.findById(id).get();
+
+    throw new InstrutorNotFoundException("Instrutor não encontrado!");
   }
 
   @Override
@@ -58,8 +53,10 @@ public class InstrutorServiceImpl implements IInstrutorService {
 
   @Override
   public List<AvaliacaoFisica> getAllAvaliacaoFisicaId(Long id) {
-    Instrutor instrutor = repository.findById(id).get();
-    return instrutor.getAvaliacoes();
+    if(repository.findById(id).isPresent()) {
+      Instrutor instrutor = repository.findById(id).get();
+      return instrutor.getAvaliacoes();
+    }
+    throw new InstrutorNotFoundException("Instrutor não encontrado!");
   }
-
 }
