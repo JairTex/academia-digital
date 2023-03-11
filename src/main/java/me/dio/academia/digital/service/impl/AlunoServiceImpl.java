@@ -4,6 +4,7 @@ import me.dio.academia.digital.entity.Aluno;
 import me.dio.academia.digital.entity.AvaliacaoFisica;
 import me.dio.academia.digital.entity.form.AlunoForm;
 import me.dio.academia.digital.entity.form.AlunoUpdateForm;
+import me.dio.academia.digital.exceptions.AlunoNotFoundException;
 import me.dio.academia.digital.exceptions.AvaliacaoFisicaNotFoundException;
 import me.dio.academia.digital.infra.utils.JavaTimeUtils;
 import me.dio.academia.digital.repository.AlunoRepository;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @Service
 public class AlunoServiceImpl implements IAlunoService {
-  private AlunoRepository repository;
+  final private AlunoRepository repository;
 
   public AlunoServiceImpl(AlunoRepository repository) {
     this.repository = repository;
@@ -30,12 +31,16 @@ public class AlunoServiceImpl implements IAlunoService {
     aluno.setBairro(form.getBairro());
     aluno.setDataDeNascimento(form.getDataDeNascimento());
     aluno.setGenero(form.getGenero());
+
     return repository.save(aluno);
   }
 
   @Override
   public Aluno get(Long id) {
-    return repository.findById(id).get();
+    if(repository.findById(id).isPresent()){
+      return repository.findById(id).get();
+    }
+    throw new AlunoNotFoundException("Aluno não encontrado!");
   }
 
   @Override
@@ -46,16 +51,20 @@ public class AlunoServiceImpl implements IAlunoService {
       LocalDate localDate = LocalDate.parse(dataDeNascimento, JavaTimeUtils.LOCAL_DATE_FORMATTER);
       return repository.findByDataDeNascimento(localDate);
     }
-
   }
 
   @Override
   public Aluno update(Long id, AlunoUpdateForm formUpdate) {
-    Aluno aluno = repository.getById(id);
-    aluno.setNome(formUpdate.getNome());
-    aluno.setBairro(formUpdate.getBairro());
-    aluno.setDataDeNascimento(formUpdate.getDataDeNascimento());
-    return repository.save(aluno);
+    if(repository.findById(id).isPresent()){
+      Aluno aluno = repository.findById(id).get();
+
+      aluno.setNome(formUpdate.getNome());
+      aluno.setBairro(formUpdate.getBairro());
+      aluno.setDataDeNascimento(formUpdate.getDataDeNascimento());
+
+      return repository.save(aluno);
+    }
+    throw new AlunoNotFoundException("Aluno não encontrado!");
   }
 
   @Override
@@ -84,25 +93,33 @@ public class AlunoServiceImpl implements IAlunoService {
     } else {
       classificacao = "Obesidade III (mórbida)";
     }
-    DecimalFormat formato = new DecimalFormat("#.##");
+    DecimalFormat formato = new DecimalFormat("#,##");
     return "IMC: " + formato.format(imc) + " --- Classificação" + classificacao;
   }
 
   @Override
   public AvaliacaoFisica getLastAvaliacaoFisica(Long id) {
-    try {
-      int lastIndex = repository.getById(id).getAvaliacoes().size() - 1;
-      AvaliacaoFisica ultimaAvaliacao = repository.getById(id).getAvaliacoes().get(lastIndex);
-      return ultimaAvaliacao;
-    }catch (RuntimeException e){
-      throw new AvaliacaoFisicaNotFoundException("Produto não encontrado!");
+    if(repository.findById(id).isPresent()){
+      if(repository.findById(id).get().getAvaliacoes()!=null) {
+        int lastIndex = repository.findById(id).get().getAvaliacoes().size() - 1;
+
+        return repository.getById(id).getAvaliacoes().get(lastIndex);
+      }
+      throw new AvaliacaoFisicaNotFoundException("Avaliação Fisica não encontrada!");
     }
+    throw new AlunoNotFoundException("Aluno não encontrado!");
   }
 
   @Override
   public List<AvaliacaoFisica> getAllAvaliacaoFisicaId(Long id) {
-    Aluno aluno = repository.findById(id).get();
-    return aluno.getAvaliacoes();
+    if(repository.findById(id).isPresent()){
+      Aluno aluno = repository.findById(id).get();
+      if(aluno.getAvaliacoes()!=null) {
+        return aluno.getAvaliacoes();
+      }else{
+        throw new AvaliacaoFisicaNotFoundException("Avaliação Fisica não encontrada!");
+      }
+    }
+    throw new AlunoNotFoundException("Aluno não encontrado!");
   }
-
 }
