@@ -1,4 +1,4 @@
-package me.dio.academia.digital.exceptons;
+package me.dio.academia.digital.exceptions;
 
 public class AvaliacaoFisicaNotFoundException extends RuntimeException{
     public AvaliacaoFisicaNotFoundException(String message) {
