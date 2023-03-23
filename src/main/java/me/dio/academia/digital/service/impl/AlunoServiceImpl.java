@@ -9,10 +9,15 @@ import me.dio.academia.digital.exceptions.AvaliacaoFisicaNotFoundException;
 import me.dio.academia.digital.infra.utils.JavaTimeUtils;
 import me.dio.academia.digital.repository.AlunoRepository;
 import me.dio.academia.digital.service.IAlunoService;
+import net.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -23,6 +28,7 @@ public class AlunoServiceImpl implements IAlunoService {
     this.repository = repository;
   }
 
+  @Transactional
   @Override
   public Aluno create(AlunoForm form) {
     Aluno aluno = new Aluno();
@@ -75,9 +81,8 @@ public class AlunoServiceImpl implements IAlunoService {
   @Override
   public String getImc(Long id) {
     AvaliacaoFisica ultimaAvaliacao = getLastAvaliacaoFisica(id);
-    double imc = ultimaAvaliacao.getPeso() / Math.pow(ultimaAvaliacao.getAltura(), 2);
+    double imc = ultimaAvaliacao.getPeso() / (Math.pow((ultimaAvaliacao.getAltura()/100), 2));
     String classificacao;
-
     if (imc < 17){
       classificacao = "Muito abaixo do peso";
     } else if (imc >= 17 && imc < 18.5){
@@ -94,16 +99,25 @@ public class AlunoServiceImpl implements IAlunoService {
       classificacao = "Obesidade III (mórbida)";
     }
     DecimalFormat formato = new DecimalFormat("#,##");
-    return "IMC: " + formato.format(imc) + " --- Classificação" + classificacao;
+    return "IMC: " + formato.format(imc) + " - Classificação: " + classificacao;
   }
 
   @Override
   public AvaliacaoFisica getLastAvaliacaoFisica(Long id) {
     if(repository.findById(id).isPresent()){
       if(repository.findById(id).get().getAvaliacoes()!=null) {
-        int lastIndex = repository.findById(id).get().getAvaliacoes().size() - 1;
+        ArrayList<AvaliacaoFisica> avaliacoes =
+                new ArrayList<AvaliacaoFisica> (repository.findById(id).get().getAvaliacoes());
+        AvaliacaoFisica ultimaAvaliacao = avaliacoes.get(0);
 
-        return repository.getById(id).getAvaliacoes().get(lastIndex);
+        for (AvaliacaoFisica avaliacao : avaliacoes){
+          if(ultimaAvaliacao.getDataDaAvaliacao()
+                  .isBefore(avaliacao.getDataDaAvaliacao())){
+            ultimaAvaliacao = avaliacao;
+          }
+        }
+
+        return ultimaAvaliacao;
       }
       throw new AvaliacaoFisicaNotFoundException("Avaliação Fisica não encontrada!");
     }

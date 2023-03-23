@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 @Table(name = "tb_avaliacoes")
 public class AvaliacaoFisica {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long id;
 
-  @OneToOne
-  @JoinColumn(name = "avaliador_id")
-  private Instrutor avaliador;
+  @ManyToOne
+  @JoinColumn(name = "instrutor_id")
+  private Instrutor instrutor;
 
   @ManyToOne
   @JoinColumn(name = "aluno_id")

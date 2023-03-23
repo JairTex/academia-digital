@@ -9,6 +9,7 @@ import me.dio.academia.digital.repository.AlunoRepository;
 import me.dio.academia.digital.repository.MatriculaRepository;
 import me.dio.academia.digital.service.IMatriculaService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class MatriculaServiceImpl implements IMatriculaService {
   }
 
   @Override
+  @Transactional
   public Matricula create(MatriculaForm form) {
     if(alunoRepository.findById(form.getAlunoId()).isPresent()){
       Aluno aluno = alunoRepository.findById(form.getAlunoId()).get();

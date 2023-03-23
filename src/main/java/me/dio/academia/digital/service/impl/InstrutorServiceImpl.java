@@ -8,6 +8,7 @@ import me.dio.academia.digital.exceptions.InstrutorNotFoundException;
 import me.dio.academia.digital.repository.InstrutorRepository;
 import me.dio.academia.digital.service.IInstrutorService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class InstrutorServiceImpl implements IInstrutorService {
   }
 
   @Override
+  @Transactional
   public Instrutor create(InstrutorForm form) {
     Instrutor instrutor = new Instrutor();
     instrutor.setNome(form.getNome());

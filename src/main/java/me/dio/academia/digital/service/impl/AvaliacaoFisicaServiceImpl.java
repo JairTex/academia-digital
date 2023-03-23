@@ -13,6 +13,7 @@ import me.dio.academia.digital.repository.AvaliacaoFisicaRepository;
 import me.dio.academia.digital.repository.InstrutorRepository;
 import me.dio.academia.digital.service.IAvaliacaoFisicaService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class AvaliacaoFisicaServiceImpl implements IAvaliacaoFisicaService {
   }
 
   @Override
+  @Transactional
   public AvaliacaoFisica create(AvaliacaoFisicaForm form) {
     AvaliacaoFisica avaliacaoFisica = new AvaliacaoFisica();
     if(alunoRepository.findById(form.getAlunoId()).isPresent()){
@@ -42,7 +44,7 @@ public class AvaliacaoFisicaServiceImpl implements IAvaliacaoFisicaService {
     }
     if(instrutorRepository.findById(form.getAvaliadorId()).isPresent()){
       Instrutor instrutor = instrutorRepository.findById(form.getAvaliadorId()).get();
-      avaliacaoFisica.setAvaliador(instrutor);
+      avaliacaoFisica.setInstrutor(instrutor);
     }else{
       throw new InstrutorNotFoundException("Instrutor não encontrado!");
     }

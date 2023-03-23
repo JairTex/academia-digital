@@ -4,8 +4,7 @@ import me.dio.academia.digital.entity.Aluno;
 import me.dio.academia.digital.entity.AvaliacaoFisica;
 import me.dio.academia.digital.entity.form.AlunoForm;
 import me.dio.academia.digital.entity.form.AlunoUpdateForm;
-import me.dio.academia.digital.service.impl.AlunoServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import me.dio.academia.digital.service.IAlunoService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -14,16 +13,30 @@ import java.util.List;
 @RestController
 @RequestMapping("/alunos")
 public class AlunoController {
-  private AlunoServiceImpl service;
+  private IAlunoService service;
+
+  public AlunoController(IAlunoService service) {
+    this.service = service;
+  }
 
   @PostMapping
   public Aluno create(@Valid @RequestBody AlunoForm form) {
     return service.create(form);
   }
 
+  @GetMapping("/{id}")
+  public Aluno get(@PathVariable Long id) {
+    return service.get(id);
+  }
+
   @PutMapping("/{id}")
   public Aluno create(@PathVariable Long id, @Valid @RequestBody AlunoUpdateForm form) {
     return service.update(id, form);
+  }
+
+  @DeleteMapping("/{id}")
+  public void delete(@PathVariable Long id) {
+    service.delete(id);
   }
 
   @GetMapping
